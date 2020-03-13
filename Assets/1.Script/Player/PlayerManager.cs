@@ -14,6 +14,19 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        PlayerInput();
+    }
+
+    void PlayerInput()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            AttackPunch();
+        }
+    }
+
+    void AttackPunch()
+    {
+
     }
 }

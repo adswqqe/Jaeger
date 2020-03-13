@@ -10,19 +10,20 @@ public class PlayerMovement : MonoBehaviour
     CircleCollider2D circleCollider;
 
     [SerializeField]
-    float moveSpped = 250f;
+    float moveSpped = 260f;
     [SerializeField]
-    float jumpPower = 5;
+    float jumpPower = 7;
     [SerializeField]
-    float maxSpeed = 500f;
+    float maxSpeed = 260f;
     [SerializeField]
-    float slideRate = 2f;
+    float slideRate = 0.25f;
     [SerializeField]
-    float AttackSlideRate = 1f;
+    float AttackSlideRate = 0.1f;
 
     int whatisGround;
     float moveDir;
     bool isGround;
+    int jumpCount;
 
     // Start is called before the first frame update
     void Start()
@@ -58,10 +59,17 @@ public class PlayerMovement : MonoBehaviour
     void PlayerInput()
     {
         moveDir = Input.GetAxisRaw("Horizontal");
-        if (Input.GetKeyDown(KeyCode.Space) && isGround /*&& !isPlayeringAnim("Attack")*/)
+
+        if (Input.GetKeyDown(KeyCode.Space) /*&& !isPlayeringAnim("Attack")*/)
         {
-            rb.velocity += new Vector2(0, jumpPower);
-            MyAnimSetTrigger("Jump");
+            if (jumpCount < 1)
+            {
+                jumpCount++;
+                rb.velocity += new Vector2(0, jumpPower);
+                MyAnimSetTrigger("Jump");
+            }
+            else if (!isGround)
+                return;
         }
     }
 
@@ -113,6 +121,7 @@ public class PlayerMovement : MonoBehaviour
         if (Physics2D.Raycast(circleCollider.bounds.center, Vector2.down, 1f, whatisGround))
         {
             isGround = true;
+            jumpCount = 0;  // 2단 점프를 위한 초기화
             anim.ResetTrigger("Idle");  //test
         }
         else

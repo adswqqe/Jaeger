@@ -59,7 +59,6 @@ public class PlayerMovement : MonoBehaviour
     void PlayerInput()
     {
         moveDir = Input.GetAxisRaw("Horizontal");
-
         if (Input.GetKeyDown(KeyCode.Space) /*&& !isPlayeringAnim("Attack")*/)
         {
             if (jumpCount < 1)
@@ -94,11 +93,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGround)
         {
-            if ((Mathf.Abs(moveDir) <= 0.01f || Mathf.Abs(rb.velocity.x) <= 0.01f) && Mathf.Abs(rb.velocity.y) <= 0.01f)
+            if ((Mathf.Abs(moveDir) <= 0.001f && Mathf.Abs(rb.velocity.x) <= 0.01f) && Mathf.Abs(rb.velocity.y) <= 0.01f)     //(Mathf.Abs(moveDir) <= 0.001f && Mathf.Abs(rb.velocity.x) <= 0.001f) 
+                                                                                                                                //  ||처리를 하니 자꾸 키 방향바꿀때마다 idle로 돌아가서 &&처리
             {
-                MyAnimSetTrigger("Idle");
+                    MyAnimSetTrigger("Idle");
             }
-            else if (Mathf.Abs(rb.velocity.x) > 0.01 && Mathf.Abs(rb.velocity.y) <= 0.01f)
+            else if (Mathf.Abs(rb.velocity.x) > 0.001 && Mathf.Abs(rb.velocity.y) <= 0.001f)
             {
                 MyAnimSetTrigger("Walk");
             }

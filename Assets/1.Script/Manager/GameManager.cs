@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     CinemachineVirtualCamera cmVcam;
     [SerializeField]
     PlayerManager player;
+    [SerializeField]
+    Transform playerSpawnPos;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     void InitGame()
     {
-        var Playerobj = Instantiate(player, Vector3.zero, Quaternion.identity);
+        var Playerobj = Instantiate(player, playerSpawnPos.position, Quaternion.identity);
         cmVcam.Follow = Playerobj.transform;
     }
 

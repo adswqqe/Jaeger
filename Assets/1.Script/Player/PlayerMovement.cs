@@ -10,20 +10,30 @@ public class PlayerMovement : MonoBehaviour
     CircleCollider2D circleCollider;
 
     [SerializeField]
-    float moveSpped = 260f;
+    float moveSpped = 280f;
     [SerializeField]
     float jumpPower = 7;
     [SerializeField]
-    float maxSpeed = 260f;
+    float maxSpeed = 290f;
     [SerializeField]
     float slideRate = 0.25f;
     [SerializeField]
     float AttackSlideRate = 0.1f;
-
+    [SerializeField]
+    float dashDistance = 2f;
+    
+    const float DOUBLE_CLICK_TIME = 0.2f;
+    const float DASH_COOL_TIME = 2.0f;
+    const int MAX_DASH_NUMBER_OF_TIME = 3;
+    int curDashNumberOfTime = 3;
+    float curDashCoolTime = 0f;
+    float lastLeftClickTime;
+    float lastRightClickTime;
     int whatisGround;
     float moveDir;
     bool isGround;
     int jumpCount;
+    float lastMoveDir;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +43,8 @@ public class PlayerMovement : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         circleCollider = GetComponent<CircleCollider2D>();
         whatisGround = 1 << LayerMask.NameToLayer("Plaform");
+
+        StartCoroutine("CoolTimeCoroutine");
     }
 
     // Update is called once per frame
@@ -69,6 +81,63 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (!isGround)
                 return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            float timeSinceLastClick = Time.time - lastLeftClickTime;
+
+            if (timeSinceLastClick <= DOUBLE_CLICK_TIME)    //Double Click
+            {
+                Debug.Log("Left double");
+                lastMoveDir = moveDir;
+                HandleDash(Vector2.left);
+            }
+
+            lastLeftClickTime = Time.time;
+        }
+        
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            float timeSinceLastClick = Time.time - lastRightClickTime;
+
+            if (timeSinceLastClick <= DOUBLE_CLICK_TIME)    //Double Click
+            {
+                lastMoveDir = moveDir;
+                Debug.Log("Right double");
+                HandleDash(Vector2.right);
+            }
+
+            lastRightClickTime = Time.time;
+        }
+
+        
+    }
+
+    bool CanMove(Vector3 dir, float distance)
+    {
+        Debug.Log(Physics2D.Raycast(new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z), dir, distance, whatisGround).collider == null);
+        return Physics2D.Raycast(new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z), dir, distance, whatisGround).collider == null;
+    }
+
+    void HandleDash(Vector2 dir)
+    {
+        //Debug.DrawLine(new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z)
+        //                , new Vector3(transform.position.x + (lastMoveDir * dashDistance), transform.position.y + 0.5f, transform.position.z), Color.red);
+        if (curDashNumberOfTime <= 0)        // 만약 대쉬 횟수가 0보다 적다면
+            return;
+        else
+            curDashNumberOfTime--;
+
+        if (CanMove(dir, dashDistance))
+            transform.position = new Vector3(transform.position.x + (lastMoveDir * dashDistance), transform.position.y, transform.position.z);
+        else
+        {
+            var hit = Physics2D.Raycast(new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z),
+                            new Vector3(transform.position.x + (lastMoveDir * dashDistance), transform.position.y, transform.position.z), dashDistance, whatisGround);
+            if (hit.distance > 0.6)
+                transform.position = new Vector3(transform.position.x + (lastMoveDir * (hit.distance * 0.5f)), transform.position.y, transform.position.z); // 벽과 캐릭터의 절반만 대쉬하도록.. 자꾸 낑김
+            Debug.Log(hit.distance);
         }
     }
 
@@ -144,6 +213,26 @@ public class PlayerMovement : MonoBehaviour
         if (!isPlayeringAnim(AnimName))
         {
             anim.SetTrigger(AnimName);
+        }
+    }
+
+    IEnumerator CoolTimeCoroutine()
+    {
+        
+        while(true)
+        {
+            if (curDashNumberOfTime < MAX_DASH_NUMBER_OF_TIME)
+            {
+                curDashCoolTime += Time.deltaTime;
+                Debug.Log(curDashCoolTime);
+                if (curDashCoolTime >= DASH_COOL_TIME)
+                {
+                    curDashNumberOfTime++;
+                    curDashCoolTime = 0f;
+                    Debug.Log(curDashNumberOfTime);
+                }
+            }
+            yield return new WaitForSeconds(0.02f);
         }
     }
 

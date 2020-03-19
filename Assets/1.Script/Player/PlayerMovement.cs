@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     Animator anim;
     SpriteRenderer sr;
-    CircleCollider2D circleCollider;
+    CapsuleCollider2D capsuleCollider;
 
     [SerializeField]
     float moveSpped = 280f;
@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     float slideRate = 0.25f;
     [SerializeField]
     float AttackSlideRate = 0.1f;
+    [SerializeField]
+    float AttackMoveSpped = 0.1f;
     [SerializeField]
     float dashDistance = 2f;
     
@@ -34,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     bool isGround;
     int jumpCount;
     float lastMoveDir;
+    bool isAttack = false;
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
-        circleCollider = GetComponent<CircleCollider2D>();
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
         whatisGround = 1 << LayerMask.NameToLayer("Plaform");
 
         StartCoroutine("CoolTimeCoroutine");
@@ -56,7 +59,11 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if(PlayerFlip() || Mathf.Abs (moveDir * rb.velocity.x) < maxSpeed)      //최고속도에 도달하기 전까지..
+        if (isAttack)
+        {
+            rb.velocity = new Vector2(moveDir * AttackMoveSpped, rb.velocity.y);
+        }
+        else if (PlayerFlip() || Mathf.Abs (moveDir * rb.velocity.x) < maxSpeed)      //최고속도에 도달하기 전까지..
         {
             rb.AddForce(new Vector2(moveDir * Time.fixedDeltaTime * moveSpped, 0));
         }
@@ -70,7 +77,11 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayerInput()
     {
-        moveDir = Input.GetAxisRaw("Horizontal");
+        if (!isAttack)
+        {
+            moveDir = Input.GetAxisRaw("Horizontal");
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) /*&& !isPlayeringAnim("Attack")*/)
         {
             if (jumpCount < 1)
@@ -146,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
         float refVelocity = 0;
         //if (isGround)
         //{
-        //    if (isPlayeringAnim("Attack"))
+        //    if (isAttack)
         //    {
         //        rb.velocity = new Vector2(Mathf.SmoothDamp(rb.velocity.x, 0f, ref refVelocity, slideRate + AttackSlideRate), rb.velocity.y);
         //    }
@@ -162,12 +173,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGround)
         {
-            if ((Mathf.Abs(moveDir) <= 0.001f && Mathf.Abs(rb.velocity.x) <= 0.01f) && Mathf.Abs(rb.velocity.y) <= 0.01f)     //(Mathf.Abs(moveDir) <= 0.001f && Mathf.Abs(rb.velocity.x) <= 0.001f) 
+            if ((Mathf.Abs(moveDir) <= 0.001f && Mathf.Abs(rb.velocity.x) <= 0.01f) && Mathf.Abs(rb.velocity.y) <= 0.01f && !isAttack)     //(Mathf.Abs(moveDir) <= 0.001f && Mathf.Abs(rb.velocity.x) <= 0.001f) 
                                                                                                                                 //  ||처리를 하니 자꾸 키 방향바꿀때마다 idle로 돌아가서 &&처리
             {
                     MyAnimSetTrigger("Idle");
             }
-            else if (Mathf.Abs(rb.velocity.x) > 0.001 && Mathf.Abs(rb.velocity.y) <= 0.001f)
+            else if (Mathf.Abs(rb.velocity.x) > 0.001 && Mathf.Abs(rb.velocity.y) <= 0.001f && !isAttack)
             {
                 MyAnimSetTrigger("Walk");
             }
@@ -187,7 +198,7 @@ public class PlayerMovement : MonoBehaviour
 
     void GroundCheck()
     {
-        if (Physics2D.Raycast(circleCollider.bounds.center, Vector2.down, 1f, whatisGround))
+        if (Physics2D.Raycast(capsuleCollider.bounds.center, Vector2.down, 1f, whatisGround))
         {
             isGround = true;
             jumpCount = 0;  // 2단 점프를 위한 초기화
@@ -216,6 +227,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void OnAttacking(bool isAttacking)
+    {
+        isAttack = isAttacking;
+    }
+
     IEnumerator CoolTimeCoroutine()
     {
         
@@ -224,7 +240,6 @@ public class PlayerMovement : MonoBehaviour
             if (curDashNumberOfTime < MAX_DASH_NUMBER_OF_TIME)
             {
                 curDashCoolTime += Time.deltaTime;
-                Debug.Log(curDashCoolTime);
                 if (curDashCoolTime >= DASH_COOL_TIME)
                 {
                     curDashNumberOfTime++;

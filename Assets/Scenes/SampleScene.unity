@@ -412,6 +412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 500
+  isCatchAbleMonster: 1
 --- !u!1 &991756324
 GameObject:
   m_ObjectHideFlags: 0

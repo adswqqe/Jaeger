@@ -10,12 +10,15 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField]
     Transform attackLocation;
     [SerializeField]
+    Transform catchPos;
+    [SerializeField]
     float attackRange;
     [SerializeField]
     LayerMask enemis;
 
     Animator anim;
     Rigidbody2D rb;
+    GameObject catchMonsterObj;
 
     [SerializeField]
     float comboRate = 0.4f;
@@ -25,6 +28,7 @@ public class PlayerAttack : MonoBehaviour
     float LastAttack = .0f;
     float resetTimer = 0f;
     int comboIndex = 0;
+    bool isCatching = false;
     public string[] comboParams = { "Attack", "Attack2", "Attack3" };
 
 
@@ -38,7 +42,46 @@ public class PlayerAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.X) && comboIndex < comboParams.Length)
+        PlayerInput();
+
+        attackLocation.localScale = new Vector3(1, -1, 1);
+    }
+
+    void PlayerInput()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (!isCatching)
+            {
+                MyAnimSetTrigger("Catch");
+
+                Collider2D[] hits = Physics2D.OverlapCircleAll(attackLocation.position, attackRange, enemis);
+                foreach (var enemy in hits)
+                {
+                    if (enemy == null)
+                        break;
+
+                    if (enemy.GetComponent<Monster>().IsCatchAble())
+                    {
+                        isCatching = true;
+                        isAttacking?.Invoke(true);
+                        catchMonsterObj = enemy.gameObject;
+                        catchMonsterObj.GetComponent<Monster>().Catch(catchPos.position, isCatching);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                MyAnimSetTrigger("Throw");
+                StartCoroutine("AttackEnableDelay");
+                isCatching = false;
+                catchMonsterObj.GetComponent<Monster>().Catch(catchPos.position, isCatching);
+                catchMonsterObj = null;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.X) && comboIndex < comboParams.Length && !isCatching)
         {
             isAttacking?.Invoke(true);
             MyAnimSetTrigger(comboParams[comboIndex]);

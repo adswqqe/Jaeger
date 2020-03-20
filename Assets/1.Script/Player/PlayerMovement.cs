@@ -77,10 +77,10 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayerInput()
     {
-        if (!isAttack)
-        {
-            moveDir = Input.GetAxisRaw("Horizontal");
-        }
+        if (isAttack)
+            return;
+
+        moveDir = Input.GetAxisRaw("Horizontal");
 
         if (Input.GetKeyDown(KeyCode.Space) /*&& !isPlayeringAnim("Attack")*/)
         {

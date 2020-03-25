@@ -6,7 +6,7 @@ public class Monster : MonoBehaviour
 {
     Animator anim;
     Rigidbody2D rb;
-
+    CircleCollider2D circleCollider;
     [SerializeField]
     float maxHp = 100;
     [SerializeField]
@@ -14,19 +14,26 @@ public class Monster : MonoBehaviour
 
     bool isCatching = false;
     float currentHp;
+    bool isMonsterDirLeft;
+    bool isGround;
+    int whatisGround;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        whatisGround = 1 << LayerMask.NameToLayer("Plaform");
         currentHp = maxHp;
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        circleCollider = GetComponent<CircleCollider2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
         PlayingAnim();
+        GroundCheck();
     }
 
     void TakeDamage(int Damage)
@@ -43,7 +50,7 @@ public class Monster : MonoBehaviour
     }
 
 
-    public void Catch(Vector3 catchPos, bool isCatched)
+    public void Catch(Vector3 catchPos, bool isCatched, bool isLeft)
     {
         if (isCatched)
         {
@@ -56,9 +63,12 @@ public class Monster : MonoBehaviour
         {
             isCatching = false;
             rb.bodyType = RigidbodyType2D.Dynamic;
+            StartCoroutine("Throwing");
+            
 
         }
 
+        isMonsterDirLeft = isLeft;
     }
 
     public bool IsCatchAble()
@@ -86,6 +96,42 @@ public class Monster : MonoBehaviour
         if (!isPlayeringAnim(AnimName))
         {
             anim.SetTrigger(AnimName);
+        }
+    }
+
+    void GroundCheck()
+    {
+        if (Physics2D.Raycast(circleCollider.bounds.center, Vector2.down, 0.5f, whatisGround))
+        {
+            isGround = true;
+        }
+        else
+        {
+            isGround = false;
+        }
+
+    }
+
+
+    IEnumerator Throwing()
+    {
+        float ThrowingTime = 0;
+        while(true)
+        {
+            ThrowingTime += Time.deltaTime;
+            if (isMonsterDirLeft)
+                rb.AddForce(new Vector2(-1, 0.3f) * 300f);
+            else
+                rb.AddForce(new Vector2(1, 0.3f) * 300f);
+
+            if (isGround || ThrowingTime > 1.0f)
+            {
+                rb.velocity = Vector2.zero;
+                break;
+            }
+
+            Debug.Log("asdasdasd");
+            yield return new WaitForSeconds(0.02f);
         }
     }
 

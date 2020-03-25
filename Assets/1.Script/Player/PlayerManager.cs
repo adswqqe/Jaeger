@@ -8,6 +8,12 @@ public class PlayerManager : MonoBehaviour
     PlayerAttack playerAttack;
     Animator anim;
 
+    [SerializeField]
+    Transform playerAttackRangeTr;
+    [SerializeField]
+    Transform PlayerCatchTr;
+    
+
 
     const float DOUBLE_CLICK_TIME = 0.2f;
 
@@ -16,6 +22,7 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         playerMovement = gameObject.AddComponent<PlayerMovement>();
+        playerMovement.Init(playerAttackRangeTr, PlayerCatchTr);
         playerAttack = GetComponent<PlayerAttack>();
         anim = GetComponent<Animator>();
         BindEvents();

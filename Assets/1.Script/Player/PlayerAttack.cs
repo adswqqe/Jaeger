@@ -44,7 +44,6 @@ public class PlayerAttack : MonoBehaviour
     {
         PlayerInput();
 
-        attackLocation.localScale = new Vector3(1, -1, 1);
     }
 
     void PlayerInput()
@@ -54,29 +53,33 @@ public class PlayerAttack : MonoBehaviour
             if (!isCatching)
             {
                 MyAnimSetTrigger("Catch");
-
+                isAttacking?.Invoke(true);
                 Collider2D[] hits = Physics2D.OverlapCircleAll(attackLocation.position, attackRange, enemis);
+                int noEnemyCount = 0;
                 foreach (var enemy in hits)
                 {
-                    if (enemy == null)
-                        break;
-
                     if (enemy.GetComponent<Monster>().IsCatchAble())
                     {
                         isCatching = true;
                         isAttacking?.Invoke(true);
                         catchMonsterObj = enemy.gameObject;
-                        catchMonsterObj.GetComponent<Monster>().Catch(catchPos.position, isCatching);
+                        catchMonsterObj.GetComponent<Monster>().Catch(catchPos.position, isCatching, GetComponent<SpriteRenderer>().flipX);
                         break;
                     }
+                    else
+                        noEnemyCount++;
                 }
+                
+                if(noEnemyCount >= hits.Length)
+                    StartCoroutine("AttackEnableDelay", "Catch");
+
             }
             else
             {
                 MyAnimSetTrigger("Throw");
-                StartCoroutine("AttackEnableDelay");
+                StartCoroutine("AttackEnableDelay", "Throw");
                 isCatching = false;
-                catchMonsterObj.GetComponent<Monster>().Catch(catchPos.position, isCatching);
+                catchMonsterObj.GetComponent<Monster>().Catch(catchPos.position, isCatching, GetComponent<SpriteRenderer>().flipX);
                 catchMonsterObj = null;
             }
         }
@@ -107,7 +110,9 @@ public class PlayerAttack : MonoBehaviour
                 //    MyAnimSetTrigger("Walk");
                 //else
                 //    MyAnimSetTrigger("Reset");
-                StartCoroutine("AttackEnableDelay");
+                if (comboIndex >= 3)
+                    comboIndex = 2;
+                StartCoroutine("AttackEnableDelay", comboParams[comboIndex]);
                 comboIndex = 0;
             }
         }
@@ -136,13 +141,14 @@ public class PlayerAttack : MonoBehaviour
         Gizmos.DrawWireSphere(attackLocation.position, attackRange);
     }
 
-    IEnumerator AttackEnableDelay()
+    IEnumerator AttackEnableDelay(string animName)
     {
         while(true)
         {
-            if (isPlayeringAnim("Idle") || isPlayeringAnim("Walk") || isPlayeringAnim("Jump"))
+            if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f && anim.GetCurrentAnimatorStateInfo(0).IsName(animName) || ((isPlayeringAnim("Idle") || isPlayeringAnim("Walk") || isPlayeringAnim("Jump"))))
+            //if (isPlayeringAnim("Idle") || isPlayeringAnim("Walk") || isPlayeringAnim("Jump"))
             {
-                isAttacking?.Invoke(false);
+                Debug.Log("asdasd");
 
 
                 if (rb.velocity.y > 0.01)
@@ -150,13 +156,16 @@ public class PlayerAttack : MonoBehaviour
                     MyAnimSetTrigger("Jump");
                 }
                 else if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0)
+                {
                     MyAnimSetTrigger("Walk");
+                }
                 else
                 {
                     MyAnimSetTrigger("Reset");
                 }
 
 
+                isAttacking?.Invoke(false);
                 StopCoroutine("AttackEnableDelay");
             }
 

@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour
     Animator anim;
     SpriteRenderer sr;
     CapsuleCollider2D capsuleCollider;
+    Transform PlayerattackRangeTr;
+    Transform PlayerCatchTr;
 
     [SerializeField]
     float moveSpped = 280f;
@@ -38,6 +40,12 @@ public class PlayerMovement : MonoBehaviour
     float lastMoveDir;
     bool isAttack = false;
 
+    public void Init(Transform PlayerattackRangeTr, Transform PlayerCatchTr)
+    {
+        this.PlayerattackRangeTr = PlayerattackRangeTr;
+        this.PlayerCatchTr = PlayerCatchTr;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
         PlayerInput();
         GroundCheck();
         PlayerAnim();
+
     }
     private void FixedUpdate()
     {
@@ -191,7 +200,21 @@ public class PlayerMovement : MonoBehaviour
         if (flipSprite)
         {
             sr.flipX = !sr.flipX;
+            PlayerattackRangeTr.localPosition = new Vector3(-PlayerattackRangeTr.localPosition.x, PlayerattackRangeTr.localPosition.y, PlayerattackRangeTr.localPosition.z);
+            PlayerCatchTr.localPosition = new Vector3(-PlayerCatchTr.localPosition.x, PlayerCatchTr.localPosition.y, PlayerCatchTr.localPosition.z);
+
         }
+
+        if (sr.flipX)
+        {
+            //PlayerattackRangeTr.localPosition = new Vector3(-(PlayerattackRangeTr.localPosition.x), PlayerattackRangeTr.localPosition.y, PlayerattackRangeTr.localPosition.z);
+            //Debug.Log(PlayerattackRangeTr.localScale);
+        }
+        else
+        {
+            //PlayerattackRangeTr.localPosition = new Vector3(Mathf.Abs(PlayerattackRangeTr.localPosition.x), PlayerattackRangeTr.localPosition.y, PlayerattackRangeTr.localPosition.z);
+        }
+
 
         return flipSprite;
     }

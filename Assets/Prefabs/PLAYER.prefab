@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: -583598319247274498}
   - component: {fileID: 5410697707340713683}
   - component: {fileID: 5092476846522830920}
+  - component: {fileID: 705960529}
   m_Layer: 9
   m_Name: PLAYER
   m_TagString: Player
@@ -175,6 +176,11 @@ MonoBehaviour:
   enemis:
     serializedVersion: 2
     m_Bits: 2048
+  GoShadowCircle: {fileID: 8722429679335351103, guid: e560408652e02ce409bc2e2a66f4aae5,
+    type: 3}
+  playerWeaponAttack: {fileID: 705960529}
+  playerNoWeaponAnimator: {fileID: 9100000, guid: 4099957949886504dabdefe482529f57,
+    type: 2}
   comboRate: 0.3
   comboParams:
   - Attack
@@ -210,6 +216,26 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.58}
   m_Size: {x: 0.62, y: 1.16}
   m_Direction: 0
+--- !u!114 &705960529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3277596398239449659}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2032527199f7a6245af87635858a43f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerAttack: {fileID: -583598319247274498}
+  playerWeaponAnimator: {fileID: 9100000, guid: 85fdae17ceffc88469cce86a2ab4e085,
+    type: 2}
+  attackLocation: {fileID: 8397872983269100563}
+  attackRange: 0.5
+  enemis:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1 &5090260084596218864
 GameObject:
   m_ObjectHideFlags: 0

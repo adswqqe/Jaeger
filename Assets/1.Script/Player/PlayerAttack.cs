@@ -15,10 +15,18 @@ public class PlayerAttack : MonoBehaviour
     float attackRange;
     [SerializeField]
     LayerMask enemis;
+    [SerializeField]
+    GameObject GoShadowCircle;
+    [SerializeField]
+    PlayerWeaponAttack playerWeaponAttack;
+    [SerializeField]
+    RuntimeAnimatorController playerNoWeaponAnimator;
+
 
     Animator anim;
     Rigidbody2D rb;
     GameObject catchMonsterObj;
+    ShadowCircle shadowCircle;
 
     [SerializeField]
     float comboRate = 0.4f;
@@ -29,6 +37,7 @@ public class PlayerAttack : MonoBehaviour
     float resetTimer = 0f;
     int comboIndex = 0;
     bool isCatching = false;
+    bool isStart = false;
     public string[] comboParams = { "Attack", "Attack2", "Attack3" };
 
 
@@ -37,6 +46,13 @@ public class PlayerAttack : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        isStart = true;
+    }
+
+    private void OnEnable()
+    {
+        if (isStart)
+            anim.runtimeAnimatorController = playerNoWeaponAnimator;
     }
 
     // Update is called once per frame
@@ -48,6 +64,11 @@ public class PlayerAttack : MonoBehaviour
 
     void PlayerInput()
     {
+        if(Input.GetKeyDown(KeyCode.D))
+        {
+            StillWeapon();
+        }
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             if (!isCatching)
@@ -118,6 +139,16 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    void StillWeapon()
+    {
+        //shadowCircle = GameObject.Instantiate(GoShadowCircle, new Vector3(transform.position.x , (GetComponent<SpriteRenderer>().size.y / 2) + transform.position.y, transform.position.z)
+        //                                                                , Quaternion.identity);
+        shadowCircle = Instantiate(GoShadowCircle, new Vector3(transform.position.x, (GetComponent<SpriteRenderer>().size.y / 2) + transform.position.y, transform.position.z)
+                                                                        , Quaternion.identity).GetComponent<ShadowCircle>();
+        shadowCircle.StillMonsterWeapon += OnStillWeapon;
+        
+    }
+
     bool isPlayeringAnim(string AnimName)
     {
         if (anim.GetCurrentAnimatorStateInfo(0).IsName(AnimName))
@@ -139,6 +170,14 @@ public class PlayerAttack : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackLocation.position, attackRange);
+    }
+
+    void OnStillWeapon()
+    {
+        shadowCircle.StillMonsterWeapon -= OnStillWeapon;
+        playerWeaponAttack.enabled = true;
+        this.enabled = false;
+        
     }
 
     IEnumerator AttackEnableDelay(string animName)

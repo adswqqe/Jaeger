@@ -11,6 +11,10 @@ public class Monster : MonoBehaviour
     float maxHp = 100;
     [SerializeField]
     bool isCatchAbleMonster = true;
+    [SerializeField]
+    bool isStillAbleMonster = true;
+    [SerializeField]
+    GameObject weapon;
 
     bool isCatching = false;
     float currentHp;
@@ -64,7 +68,7 @@ public class Monster : MonoBehaviour
             isCatching = false;
             rb.bodyType = RigidbodyType2D.Dynamic;
             StartCoroutine("Throwing");
-            
+
 
         }
 
@@ -74,6 +78,16 @@ public class Monster : MonoBehaviour
     public bool IsCatchAble()
     {
         return isCatchAbleMonster;
+    }
+
+    public bool isStillAble()
+    {
+        return isStillAbleMonster;
+    }
+
+    public void StilledWeapon()
+    {
+        weapon.SetActive(false);
     }
 
     void PlayingAnim()
@@ -101,7 +115,7 @@ public class Monster : MonoBehaviour
 
     void GroundCheck()
     {
-        if (Physics2D.Raycast(circleCollider.bounds.center, Vector2.down, 0.5f, whatisGround))
+        if (Physics2D.Raycast(circleCollider.bounds.center, Vector2.down, 0.55f, whatisGround))
         {
             isGround = true;
         }
@@ -109,7 +123,7 @@ public class Monster : MonoBehaviour
         {
             isGround = false;
         }
-
+        Debug.Log(isGround);
     }
 
 
@@ -130,7 +144,6 @@ public class Monster : MonoBehaviour
                 break;
             }
 
-            Debug.Log("asdasdasd");
             yield return new WaitForSeconds(0.02f);
         }
     }

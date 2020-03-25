@@ -6,6 +6,7 @@ using UnityEngine;
 public class ShadowCircle : MonoBehaviour
 {
     public Action StillMonsterWeapon;
+    public bool isLeft;
     Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
@@ -16,8 +17,11 @@ public class ShadowCircle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rb.velocity = Vector2.right * 10f;
-        
+        if (isLeft)
+            rb.velocity = Vector2.left * 10f;
+        else
+            rb.velocity = Vector2.right * 10f;
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

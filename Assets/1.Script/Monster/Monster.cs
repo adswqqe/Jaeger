@@ -88,6 +88,7 @@ public class Monster : MonoBehaviour
     public void StilledWeapon()
     {
         weapon.SetActive(false);
+        isStillAbleMonster = false;
     }
 
     void PlayingAnim()
@@ -134,9 +135,9 @@ public class Monster : MonoBehaviour
         {
             ThrowingTime += Time.deltaTime;
             if (isMonsterDirLeft)
-                rb.AddForce(new Vector2(-1, 0.3f) * 300f);
+                rb.AddForce(new Vector2(-1, 0.3f) * 450f);
             else
-                rb.AddForce(new Vector2(1, 0.3f) * 300f);
+                rb.AddForce(new Vector2(1, 0.3f) * 450f);
 
             if (isGround || ThrowingTime > 1.0f)
             {

@@ -143,8 +143,9 @@ public class PlayerAttack : MonoBehaviour
     {
         //shadowCircle = GameObject.Instantiate(GoShadowCircle, new Vector3(transform.position.x , (GetComponent<SpriteRenderer>().size.y / 2) + transform.position.y, transform.position.z)
         //                                                                , Quaternion.identity);
-        shadowCircle = Instantiate(GoShadowCircle, new Vector3(transform.position.x, (GetComponent<SpriteRenderer>().size.y / 2) + transform.position.y, transform.position.z)
+        shadowCircle = Instantiate(GoShadowCircle, new Vector3(attackLocation.position.x, (GetComponent<SpriteRenderer>().size.y / 2) + transform.position.y, transform.position.z)
                                                                         , Quaternion.identity).GetComponent<ShadowCircle>();
+        shadowCircle.isLeft = GetComponent<SpriteRenderer>().flipX;
         shadowCircle.StillMonsterWeapon += OnStillWeapon;
         
     }

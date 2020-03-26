@@ -181,6 +181,7 @@ MonoBehaviour:
   playerWeaponAttack: {fileID: 705960529}
   playerNoWeaponAnimator: {fileID: 9100000, guid: 4099957949886504dabdefe482529f57,
     type: 2}
+  cameraShak: {fileID: 0}
   comboRate: 0.3
   comboParams:
   - Attack

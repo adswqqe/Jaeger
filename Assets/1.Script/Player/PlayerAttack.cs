@@ -21,7 +21,8 @@ public class PlayerAttack : MonoBehaviour
     PlayerWeaponAttack playerWeaponAttack;
     [SerializeField]
     RuntimeAnimatorController playerNoWeaponAnimator;
-
+   
+    public CameraShakManager cameraShak;
 
     Animator anim;
     Rigidbody2D rb;
@@ -47,6 +48,7 @@ public class PlayerAttack : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         isStart = true;
+
     }
 
     private void OnEnable()
@@ -109,6 +111,9 @@ public class PlayerAttack : MonoBehaviour
         {
             isAttacking?.Invoke(true);
             MyAnimSetTrigger(comboParams[comboIndex]);
+            if (comboIndex == 1)
+                StartCoroutine(cameraShak.Shake());
+
             Collider2D[] hits = Physics2D.OverlapCircleAll(attackLocation.position, attackRange, enemis);
 
             if (hits != null)
@@ -188,9 +193,6 @@ public class PlayerAttack : MonoBehaviour
             if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99f && anim.GetCurrentAnimatorStateInfo(0).IsName(animName) || ((isPlayeringAnim("Idle") || isPlayeringAnim("Walk") || isPlayeringAnim("Jump"))))
             //if (isPlayeringAnim("Idle") || isPlayeringAnim("Walk") || isPlayeringAnim("Jump"))
             {
-                Debug.Log("asdasd");
-
-
                 if (rb.velocity.y > 0.01)
                 {
                     MyAnimSetTrigger("Jump");

@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     PlayerManager player;
     [SerializeField]
     Transform playerSpawnPos;
+    [SerializeField]
+    CameraShakManager cameraShak;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour
     {
         var Playerobj = Instantiate(player, playerSpawnPos.position, Quaternion.identity);
         cmVcam.Follow = Playerobj.transform;
+        Playerobj.GetComponent<PlayerAttack>().cameraShak = cameraShak;
     }
 
     // Update is called once per frame

@@ -16,6 +16,8 @@ public class Monster : MonoBehaviour
     [SerializeField]
     GameObject weapon;
 
+    public CameraShakManager cameraShak;
+
     bool isCatching = false;
     float currentHp;
     bool isMonsterDirLeft;
@@ -62,6 +64,7 @@ public class Monster : MonoBehaviour
             anim.SetTrigger("Hit");
             rb.bodyType = RigidbodyType2D.Kinematic;
             transform.position = new Vector3(catchPos.x, catchPos.y - 0.5f, catchPos.z);
+            StartCoroutine(cameraShak.Shake());
         }
         else
         {
@@ -124,7 +127,7 @@ public class Monster : MonoBehaviour
         {
             isGround = false;
         }
-        Debug.Log(isGround);
+
     }
 
 
@@ -142,6 +145,7 @@ public class Monster : MonoBehaviour
             if (isGround || ThrowingTime > 1.0f)
             {
                 rb.velocity = Vector2.zero;
+                StartCoroutine(cameraShak.Shake());
                 break;
             }
 

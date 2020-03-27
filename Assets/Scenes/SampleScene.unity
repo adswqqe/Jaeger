@@ -369,6 +369,7 @@ MonoBehaviour:
   ShakeAmplitude: 1.2
   ShakeFrequency: 2
   virtualCamera: {fileID: 2051078574}
+  isCatched: 0
 --- !u!1 &566516286
 GameObject:
   m_ObjectHideFlags: 0

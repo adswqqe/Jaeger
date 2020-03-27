@@ -14,6 +14,7 @@ public class CameraShakManager : MonoBehaviour
 
     public CinemachineVirtualCamera virtualCamera;
     private CinemachineBasicMultiChannelPerlin virtualCameraNoise;
+    public bool isCatched = false;
 
     private void Start()
     {
@@ -39,6 +40,33 @@ public class CameraShakManager : MonoBehaviour
             if (virtualCamera != null || virtualCameraNoise != null)
             {
                 if (ShakeElapsedTime > 0)
+                {
+                    virtualCameraNoise.m_AmplitudeGain = ShakeAmplitude;
+                    virtualCameraNoise.m_FrequencyGain = ShakeFrequency;
+
+                    ShakeElapsedTime -= Time.deltaTime;
+                }
+                else
+                {
+                    virtualCameraNoise.m_AmplitudeGain = 0f;
+                    ShakeElapsedTime = 0f;
+                    Debug.Log("asdasd");
+                    break;
+                }
+            }
+
+            yield return null;
+        }
+    }
+
+    public IEnumerator CatchShake()
+    {
+        ShakeElapsedTime = ShakeDuration;
+        while (true)
+        {
+            if (virtualCamera != null || virtualCameraNoise != null)
+            {
+                if (isCatched)
                 {
                     virtualCameraNoise.m_AmplitudeGain = ShakeAmplitude;
                     virtualCameraNoise.m_FrequencyGain = ShakeFrequency;

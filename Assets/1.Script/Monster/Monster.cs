@@ -64,15 +64,15 @@ public class Monster : MonoBehaviour
             anim.SetTrigger("Hit");
             rb.bodyType = RigidbodyType2D.Kinematic;
             transform.position = new Vector3(catchPos.x, catchPos.y - 0.5f, catchPos.z);
-            StartCoroutine(cameraShak.Shake());
+            cameraShak.isCatched = true;
+            StartCoroutine(cameraShak.CatchShake());
         }
         else
         {
             isCatching = false;
             rb.bodyType = RigidbodyType2D.Dynamic;
             StartCoroutine("Throwing");
-
-
+            cameraShak.isCatched = false;
         }
 
         isMonsterDirLeft = isLeft;
